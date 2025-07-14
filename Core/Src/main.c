@@ -63,25 +63,42 @@ void init_columns() {
 }
 
 // Обновление анимации "Матрицы"
+// Функция обновления матрицы (эффект "падающих символов", как в "Матрице")
 void update_matrix() {
+    // Проходим по всем колонкам матрицы
     for (int col = 0; col < NUM_COLS; col++) {
-        Column *c = &columns[col];
-        if (--c->frame_counter <= 0) {
-            c->frame_counter = c->speed;
+        Column *c = &columns[col];  // Получаем текущую колонку
 
+        // Уменьшаем счетчик кадров и проверяем, нужно ли обновлять колонку
+        if (--c->frame_counter <= 0) {
+            c->frame_counter = c->speed;  // Сбрасываем счетчик кадров
+
+            // Проходим по всем символам в хвосте колонки (от хвоста к голове)
             for (int i = c->tail_len; i >= 0; i--) {
+                // Вычисляем строку для текущего символа в хвосте
                 int row = c->head_row - i;
+
+                // Проверяем, что строка находится в пределах экрана
                 if (row >= 0 && row < NUM_ROWS) {
-                    uint16_t color = (i < sizeof(fade_colors)/sizeof(fade_colors[0])) ? fade_colors[i] : ST7735_BLACK;
-                    ST7735_DrawChar(col * CHAR_WIDTH, row * CHAR_HEIGHT, random_char(), color, ST7735_BLACK);
+                    // Выбираем цвет символа: из градиента для хвоста или черный
+                    uint16_t color = (i < sizeof(fade_colors)/sizeof(fade_colors[0]))
+                                   ? fade_colors[i]  // Берем цвет из градиента
+                                   : ST7735_BLACK;    // Иначе черный цвет
+
+                    // Рисуем случайный символ в вычисленной позиции с выбранным цветом
+                    ST7735_DrawChar(col * CHAR_WIDTH, row * CHAR_HEIGHT,
+                                   random_char(), color, ST7735_BLACK);
                 }
             }
 
+            // Перемещаем голову колонки вниз
             c->head_row++;
+
+            // Если голова вышла за пределы экрана (с учетом хвоста)
             if (c->head_row - c->tail_len > NUM_ROWS) {
-                c->head_row = 0;
-                c->tail_len = 4 + rand() % MAX_TAIL;
-                c->speed = 1 + rand() % 3;
+                c->head_row = 0;  // Сбрасываем голову в верх экрана
+                c->tail_len = 4 + rand() % MAX_TAIL;  // Случайная длина хвоста (4-MAX_TAIL)
+                c->speed = 1 + rand() % 3;  // Случайная скорость (1-3)
             }
         }
     }
