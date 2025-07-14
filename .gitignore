@@ -1,0 +1,28 @@
+# Временные файлы и папки сборки
+/Debug/
+/Release/
+*.launch
+*.map
+*.o
+*.d
+*.elf
+*.hex
+*.bin
+*.lst
+
+# Локальные настройки IDE
+/.settings/
+*.cproject
+*.project
+
+# Другие временные файлы
+*.bak
+*.tmp
+*.swp
+*.swo
+*.swd
+*.swv
+
+# Логи и кэш
+*.log
+.cache/
